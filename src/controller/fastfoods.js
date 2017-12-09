@@ -6,8 +6,8 @@ import bodyParser from 'body-parser';
 export default({ config, db }) => {
   let api = Router();
 
-  // '/v1/fastfoods/add'
-  api.post('/add', (req, res) => {
+  // endpoint to save fastfood - '/api/fastfoods/'
+  api.post('/', (req, res) => {
     let fastFood = new FastFood();
     fastFood.name = req.body.name;
 
@@ -18,5 +18,25 @@ export default({ config, db }) => {
       res.json({ message: 'FastFood saved successfully' });
     });
   });
+  
+  // endpoint to get fastfoods - '/api/fastfoods/'
+  api.get('/', (req, res) => {
+    FastFood.find({}, (err, fastfoods) => {
+      if (err) {
+        res.send(err);
+      }
+      res.json(fastfoods);
+    });
+  });
+  
+  // endpoint to get one fastfood - '/api/fastfoods/:id'
+  api.get('/:id', (req, res) => {
+      FastFood.findById(req.params.id, (err, fastfoods) => {
+        if (err) {
+          res.send(err);
+        }
+        res.json(fastfoods);
+      });
+    });
   return api;
 }
