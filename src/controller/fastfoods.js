@@ -15,7 +15,7 @@ export default({ config, db }) => {
       if (err) {
         res.send(err);
       }
-      res.json({ message: 'FastFood saved successfully' });
+      res.json({ message: 'Record saved successfully' });
     });
   });
   
@@ -50,9 +50,22 @@ export default({ config, db }) => {
         if(err){
           res.send(err)
         }
-        res.json("Record was updated successfully")
+        res.json({message:"Record was updated successfully"})
       })
     });
   });
+
+   // endpoint to delete fastfood - '/api/fastfoods/:id'
+   api.delete('/:id', (req, res) => {
+    FastFood.remove({
+      _id: req.params.id
+    }, (err) => {
+      if (err) {
+        res.send(err);
+      }
+      res.json({message: "Record deleted successfully"});
+    });
+  });
+  
   return api;
 }
