@@ -11,7 +11,7 @@ export default({ config, db }) => {
     let fastFood = new FastFood();
     fastFood.name = req.body.name;
 
-    fastFood.save(function(err) {
+    fastFood.save(err => {
       if (err) {
         res.send(err);
       }
@@ -31,12 +31,28 @@ export default({ config, db }) => {
   
   // endpoint to get one fastfood - '/api/fastfoods/:id'
   api.get('/:id', (req, res) => {
-      FastFood.findById(req.params.id, (err, fastfoods) => {
+      FastFood.findById(req.params.id, (err, fastfood) => {
         if (err) {
           res.send(err);
         }
-        res.json(fastfoods);
+        res.json(fastfood);
       });
     });
+
+  // endpoint to update fastfood - '/api/fastfoods/:id'
+  api.put('/:id', (req, res) => {
+    FastFood.findById(req.params.id, (err, fastfood) => {
+      if (err) {
+        res.send(err);
+      }
+      fastfood.name = req.body.name;
+      fastfood.save(err =>{
+        if(err){
+          res.send(err)
+        }
+        res.json("Record was updated successfully")
+      })
+    });
+  });
   return api;
 }
