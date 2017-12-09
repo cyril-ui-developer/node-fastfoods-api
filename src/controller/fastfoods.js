@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 import { Router } from 'express';
-import FastFood from '../model/fastfoods';
+import FastFood from '../model/fastfood';
 import bodyParser from 'body-parser';
+import Review from '../model/review';
 
 export default({ config, db }) => {
   let api = Router();
@@ -9,7 +10,10 @@ export default({ config, db }) => {
   // endpoint to save fastfood - '/api/fastfoods/'
   api.post('/', (req, res) => {
     let fastFood = new FastFood();
-    fastFood.name = req.body.name;
+    fastFood.foodName = req.body.foodName;
+    fastFood.foodType = req.body.foodType;
+    fastFood.foodCost = req.body.foodCost;
+    fastFood.geometry.coordinates = req.body.geometry.coordinates;
 
     fastFood.save(err => {
       if (err) {
@@ -66,6 +70,41 @@ export default({ config, db }) => {
       res.json({message: "Record deleted successfully"});
     });
   });
-  
+
+  // endpoint to add review to fastfood by id - '/api/fastfoods/review/:id'
+  api.post('/reviews/:id', (req, res) => {
+    FastFood.findById(req.params.id, (err, foodfast) => {
+      if (err) {
+        res.send(err);
+      }
+      let review = new Review();
+
+      review.title = req.body.title;
+      review.content = req.body.content;
+      review.foodfast = foodfast._id;
+      review.save((err) => {
+        if (err) {
+          res.send(err);
+        }
+        foodfast.reviews.push(review);
+        foodfast.save(err => {
+          if (err) {
+            res.send(err);
+          }
+          res.json({ message: 'Food Fast review saved' });
+        });
+      });
+    });
+  });
+
+   // endpoint to get review by fastfood id - '/api/fastfoods/review/:id'
+  api.get('/reviews/:id', (req, res) => {
+    Review.find({foodfast: req.params.id}, (err, reviews) => {
+      if (err) {
+        res.send(err);
+      }
+      res.json(reviews);
+    });
+  });
   return api;
 }
