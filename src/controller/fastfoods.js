@@ -45,12 +45,17 @@ export default({ config, db }) => {
 
   // endpoint to update fastfood - '/api/fastfoods/:id'
   api.put('/:id', (req, res) => {
-    FastFood.findById(req.params.id, (err, fastfood) => {
+    FastFood.findById(req.params.id, (err, fastFood) => {
       if (err) {
         res.send(err);
       }
-      fastfood.name = req.body.name;
-      fastfood.save(err =>{
+
+      fastFood.foodName = req.body.foodName;
+      fastFood.foodType = req.body.foodType;
+      fastFood.foodCost = req.body.foodCost;
+      fastFood.geometry.coordinates = req.body.geometry.coordinates;
+
+      fastFood.save(err =>{
         if(err){
           res.send(err)
         }
@@ -67,7 +72,14 @@ export default({ config, db }) => {
       if (err) {
         res.send(err);
       }
-      res.json({message: "Record deleted successfully"});
+      Review.remove({
+        foodfast: req.params.id
+      }, (err) => {
+        if (err) {
+          res.send(err);
+        }
+        res.json({message: "Deleted Food Fast and Reviews Successfully"});
+      });
     });
   });
 
