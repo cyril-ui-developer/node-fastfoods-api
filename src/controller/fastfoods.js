@@ -3,11 +3,11 @@ import { Router } from 'express';
 import FastFood from '../model/fastfood';
 import bodyParser from 'body-parser';
 import Review from '../model/review';
+import { authenticate } from '../middleware/auth';
 
 export default({ config, db }) => {
   let api = Router();
-
-  // endpoint to save fastfood - '/api/fastfoods/'
+    // endpoint to save fastfood - '/api/fastfoods/'
   api.post('/', (req, res) => {
     let fastFood = new FastFood();
     fastFood.foodName = req.body.foodName;
@@ -24,7 +24,8 @@ export default({ config, db }) => {
   });
   
   // endpoint to get fastfoods - '/api/fastfoods/'
-  api.get('/', (req, res) => {
+  // to test using postman when authentication is enabled, set the header - 'Authorisation: Bearer token'
+  api.get('/', authenticate,(req, res) => {
     FastFood.find({}, (err, fastfoods) => {
       if (err) {
         res.send(err);
